@@ -1,39 +1,75 @@
 import random
-import db
+import sys
 
+#Title
 def displayTitle():
-    print("BLACKJACK!")
-    print("Blackjack payout is 3:2")
+    print("BLACKJACK! Play Responsibly")
+    print("Blackjack payout is 3:2\n")
 
-def playGame(deck):
+def gamePlay(cardDeck):
+    #This shows the dealers hand
     dealerHand = []
-    dealerValue = 0
+    dealerHandValue = 0
     while True:
-        if dealerValue < 17:
-            dealCard = random.randint(0, len(deck)-1)
-            dealerCard = deck[dealCard]
+        if dealerHandValue < 17:
+            dealCard = random.randint(0, len(cardDeck) - 1)
+            dealerCard = cardDeck[dealCard]
             dealerHand.append(dealerCard)
-            dealerValue = 0
+            dealerHandValue = 0
             for card in dealerHand:
-                dealerValue += int(card[2])
-        elif dealerValue >= 17:
+                dealerHandValue += int(card[2])
+        elif dealerHandValue >= 17:
             break
     print("\nDealer show card:")
-    print(dealerHand[0][0] + " of " + dealerHand[0][1])
+    print(f"{dealerHand[0][0]} of {dealerHand[0][1]}")
 
+    #This shows the players hand and if they want to hit/stand
     playerHand = []
-    playerValue = 0
+    playerHandValue = 0
     i = 0
     while i < 2:
-        dealCard = random.randint(0, len(deck) - 1)
-        playerCard = deck[dealCard]
+        dealCard = random.randint(0, len(cardDeck) - 1)
+        playerCard = cardDeck[dealCard]
         playerHand.append(playerCard)
         i += 1
     print("\nPLAYER'S CARDS:")
     for card in playerHand:
         print(card[0], "of", card[1])
-        playerValue += int(card[2])
-    playerMove = input("\nHit or Stand? (hit/stand):  ")
+        playerHandValue += int(card[2])
+    playerChoice = input("\nHit or Stand? (Hit/Stand):  ")
+
+    #If hit, loops through to check if its under 21, if true, gives option to hit or stand again
+    #if hit and over 21 it breaks
+    #if stand it breaks
+    while True:
+        try:
+            if playerChoice.lower() == "Hit":
+                dealCard = random.randint(0, len(cardDeck)-1)
+                playerCard = cardDeck[dealCard]
+                playerHand.append(playerCard)
+
+                print("\nYour hand is: ")
+                playerHandValue = 0
+                for card in playerHand:
+                    print(f"{card[0]} of {card[1]}")
+                    playerHandValue += int(card[2])
+                if playerHandValue > 21:
+                    break
+                else:
+                    playerChoice = input("\nHit or Stand? (Hit/Stand): ")
+            elif playerChoice.lower() == "Stand":
+                break
+            else:
+                print("You must say Hit or Stand")
+                playerChoice = input("\nHit or Stand? (Hit/Stand): ")
+        except ValueError:
+            print("Invalid Entry")
+        except Exception as e:
+            print("Unexpected error ", type(e), e)
+            sys.exit(1)
+
+
+
 
 def main():
     deck = [["2", "Spades", 2], ["2", "Clubs", 2], ["2", "Diamonds", 2], ["2", "Hearts", 2],
