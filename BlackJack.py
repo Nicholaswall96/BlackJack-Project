@@ -2,91 +2,96 @@ import random
 import sys
 import db
 
-#Title
+
+# Title
 def displayTitle():
     print("BLACKJACK! Play Responsibly")
     print("Blackjack payout is 3:2\n")
-def gamePlay(cardDeck):
-    #This shows the dealers hand
+
+
+def playGame(deck):
+    # This shows the dealers hand
     dealerHand = []
     dealerHandValue = 0
     while True:
         if dealerHandValue < 17:
-            dealCard = random.randint(0, len(cardDeck) - 1)
-            dealerCard = cardDeck[dealCard]
+            dealCard = random.randint(0, len(deck) - 1)
+            dealerCard = deck[dealCard]
             dealerHand.append(dealerCard)
             dealerHandValue = 0
             for card in dealerHand:
                 dealerHandValue += int(card[2])
         elif dealerHandValue >= 17:
             break
-    print("\nDealer show card:")
-    print(f"{dealerHand[0][0]} of {dealerHand[0][1]}")
+    print("\nDEALER SHOW CARD:")
+    print(dealerHand[0][0], "of", dealerHand[0][1])
 
-    #This shows the players hand and if they want to hit/stand
+    # This shows the players hand and if they want to hit/stand
     playerHand = []
     playerHandValue = 0
     i = 0
     while i < 2:
-        dealCard = random.randint(0, len(cardDeck) - 1)
-        playerCard = cardDeck[dealCard]
+        dealCard = random.randint(0, len(deck) - 1)
+        playerCard = deck[dealCard]
         playerHand.append(playerCard)
         i += 1
-    print("\nYour hand is: ")
+    print("\nPLAYER'S CARDS:")
     for card in playerHand:
         print(card[0], "of", card[1])
         playerHandValue += int(card[2])
     playerChoice = input("\nHit or Stand? (Hit/Stand):  ")
 
-    #If hit, loops through to check if its under 21, if true, gives option to hit or stand again
-    #if hit and over 21 it breaks
-    #if stand it breaks
+    # If hit, loops through to check if its under 21, if true, gives option to hit or stand again
+    # if hit and over 21 it breaks
+    # if stand it breaks
     while True:
         try:
-            if playerChoice.lower() == "Hit":
-                dealCard = random.randint(0, len(cardDeck)-1)
-                playerCard = cardDeck[dealCard]
+            if playerChoice.lower() == "hit":
+                dealCard = random.randint(0, len(deck) - 1)
+                playerCard = deck[dealCard]
                 playerHand.append(playerCard)
 
-                print("\nYour hand is: ")
+                print("\nPLAYER'S CARDS:")
                 playerHandValue = 0
                 for card in playerHand:
-                    print(f"{card[0]} of {card[1]}")
+                    print(card[0], "of", card[1])
                     playerHandValue += int(card[2])
                 if playerHandValue > 21:
                     break
                 else:
-                    playerChoice = input("\nHit or Stand? (Hit/Stand): ")
-            elif playerChoice.lower() == "Stand":
+                    playerChoice = input("\nHit or Stand? (hit/stand):  ")
+            elif playerChoice.lower() == "stand":
                 break
             else:
-                print("You must say Hit or Stand")
-                playerChoice = input("\nHit or Stand? (Hit/Stand): ")
+                print("Not valid Entry")
+                playerChoice = input("\nHit or Stand? (hit/stand):  ")
         except ValueError:
             print("Invalid Entry")
         except Exception as e:
             print("Unexpected error ", type(e), e)
             sys.exit(1)
+
     print("\nDealers hand: ")
     for card in dealerHand:
         print(f"{card[0]} of {card[1]}")
     print(f"\nValue of your hand: {playerHandValue}")
     print(f"Value of dealers hand: {dealerHandValue}")
 
-#Determines who wins with various if and statements
+
+# Determines who wins with various if and statements
 def determineWinner(playerHandValue, dealerHandValue):
     playerWins = 0
     if playerHandValue > 21:
         print("You bust! You lose your bet")
         return playerWins
-    elif playerHandValue == 21 and playerHandValue > dealerHandValue:
-        print("Blackjack! you win your bet")
+    elif playerHandValue <= 21 and playerHandValue > dealerHandValue:
+        print("Congrats! you win your bet")
         playerWins = 1
         return playerWins
-    elif dealerHandValue == 21 and dealerHandValue > playerHandValue:
-        print("Dealer Blackjack! you lose your bet")
+    elif dealerHandValue <= 21 and dealerHandValue > playerHandValue:
+        print("Sorry! you lose your bet")
         return playerWins
-    elif playerHandValue <= 21 and dealerHandValue > 21:
+    elif dealerHandValue > 21 and playerHandValue <= 21:
         print("Dealer busts! You win your bet")
         playerWins = 1
         return playerWins
@@ -95,8 +100,9 @@ def determineWinner(playerHandValue, dealerHandValue):
         playerWins = 2
         return playerWins
 
+
 def main():
-    #main deck
+    # main deck
     deck = [["2", "Spades", 2], ["2", "Clubs", 2], ["2", "Diamonds", 2], ["2", "Hearts", 2],
             ["3", "Spades", 3], ["3", "Clubs", 3], ["3", "Diamonds", 3], ["3", "Hearts", 3],
             ["4", "Spades", 4], ["4", "Clubs", 4], ["4", "Diamonds", 4], ["4", "Hearts", 4],
@@ -114,24 +120,24 @@ def main():
     displayTitle()
     choice = "y"
     while choice.lower() == "y":
-        money = db.readMoney()
-        betAmount = float(input("How much would you like to bet?: "))
-        while betAmount < 5 and betAmount > 1000:
+        MoneyAmount = db.readMoney()
+        betAmount = float(input("Bet amount: "))
+        while betAmount < 5 or betAmount > 1000:
             print("You cannot bet less than $5 or more than $1000.")
-            betAmount = float(input("How much would you like to bet?: "))
-        while betAmount > money:
+            betAmount = float(input("Bet amount: "))
+        while betAmount > MoneyAmount:
             print("You cannot bet more than what you have.")
-            betAmount = float(input("How much would you like to bet?: "))
+            betAmount = float(input("Bet amount: "))
 
-        playerWins = gamePlay(cardDeck)
-        if playerWins == 1:
-            payOut = round((betAmount * 1.5) + money,2)
+        player = playGame(deck)
+        if player == 1:
+            payOut = round((betAmount * 1.5) + MoneyAmount, 2)
             print(f"Money: {payOut}")
-        elif playerWins == 2:
-            payOut = round(betAmount,2)
+        elif player == 2:
+            payOut = round(betAmount, 2)
             print(f"Money: {payOut}")
         else:
-            payOut = round(betAmount - (2 * betAmount) + money,2)
+            payOut = round(betAmount - (2 * betAmount) + MoneyAmount, 2)
             print(f"Money: {payOut}")
         if payOut < 5:
             print("You must buy more chips to continue")
@@ -139,8 +145,10 @@ def main():
 
         payOut = str(payOut)
         db.writeMoney(payOut)
-        choice = input("Play again? (y/n): ")
+        choice = input("\nPlay again? (y/n): ")
     print("Come back soon!")
+    print("Bye")
+
 
 if __name__ == "__main__":
     main()
