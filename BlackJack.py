@@ -3,14 +3,13 @@ import sys
 import db
 
 
-# Title
 def displayTitle():
-    print("BLACKJACK! Play Responsibly")
+    print("BLACKJACK!")
     print("Blackjack payout is 3:2\n")
 
 
 def playGame(deck):
-    # This shows the dealers hand
+    #Dealers hand
     dealerHand = []
     dealerHandValue = 0
     while True:
@@ -23,7 +22,7 @@ def playGame(deck):
                 dealerHandValue += int(card[2])
         elif dealerHandValue >= 17:
             break
-    print("\nDEALER SHOW CARD:")
+    print("\nDEALER'S SHOW CARD:")
     print(dealerHand[0][0], "of", dealerHand[0][1])
 
     # This shows the players hand and if they want to hit/stand
@@ -35,11 +34,11 @@ def playGame(deck):
         playerCard = deck[dealCard]
         playerHand.append(playerCard)
         i += 1
-    print("\nPLAYER'S CARDS:")
+    print("\nYOUR CARDS:")
     for card in playerHand:
         print(card[0], "of", card[1])
         playerHandValue += int(card[2])
-    playerChoice = input("\nHit or Stand? (Hit/Stand):  ")
+    playerChoice = input("\nHit or Stand? (hit/stand):  ")
 
     # If hit, loops through to check if its under 21, if true, gives option to hit or stand again
     # if hit and over 21 it breaks
@@ -51,7 +50,7 @@ def playGame(deck):
                 playerCard = deck[dealCard]
                 playerHand.append(playerCard)
 
-                print("\nPLAYER'S CARDS:")
+                print("\nYOUR CARDS:")
                 playerHandValue = 0
                 for card in playerHand:
                     print(card[0], "of", card[1])
@@ -71,32 +70,32 @@ def playGame(deck):
             print("Unexpected error ", type(e), e)
             sys.exit(1)
 
-    print("\nDealers hand: ")
+    print("\nDEALER'S CARDS: ")
     for card in dealerHand:
         print(f"{card[0]} of {card[1]}")
-    print(f"\nValue of your hand: {playerHandValue}")
-    print(f"Value of dealers hand: {dealerHandValue}")
+
+    print(f"\nYOUR POINTS:\t{playerHandValue}")
+    print(f"DEALER'S POINTS:\t{dealerHandValue}")
 
 
 # Determines who wins with various if and statements
-def determineWinner(playerHandValue, dealerHandValue):
     playerWins = 0
     if playerHandValue > 21:
-        print("You bust! You lose your bet")
+        print("\nYou bust! You lose your bet")
         return playerWins
     elif playerHandValue <= 21 and playerHandValue > dealerHandValue:
-        print("Congrats! you win your bet")
+        print("\nCongrats! you win your bet")
         playerWins = 1
         return playerWins
     elif dealerHandValue <= 21 and dealerHandValue > playerHandValue:
-        print("Sorry! you lose your bet")
+        print("\nSorry! You lose.")
         return playerWins
     elif dealerHandValue > 21 and playerHandValue <= 21:
-        print("Dealer busts! You win your bet")
+        print("\nDealer busts! You win your bet")
         playerWins = 1
         return playerWins
     elif playerHandValue <= 21 and playerHandValue == dealerHandValue:
-        print("A standoff! You get your bet back")
+        print("\nA standoff! You get your bet back")
         playerWins = 2
         return playerWins
 
@@ -129,26 +128,25 @@ def main():
             print("You cannot bet more than what you have.")
             betAmount = float(input("Bet amount: "))
 
-        player = playGame(deck)
-        if player == 1:
+        playerWins = playGame(deck)
+        if playerWins == 1:
             payOut = round((betAmount * 1.5) + MoneyAmount, 2)
-            print(f"Money: {payOut}")
-        elif player == 2:
-            payOut = round(betAmount, 2)
-            print(f"Money: {payOut}")
+            print(f"\nMoney: {payOut}")
+        elif playerWins == 2:
+            payOut = round(betAmount+ MoneyAmount, 2)
+            print(f"\nMoney: {payOut}")
         else:
             payOut = round(betAmount - (2 * betAmount) + MoneyAmount, 2)
-            print(f"Money: {payOut}")
+            print(f"\nMoney: {payOut}")
         if payOut < 5:
-            print("You must buy more chips to continue")
+            print("\nYou must buy more chips to continue")
             payOut = float(input("Enter number of chips you want to buy: "))
 
         payOut = str(payOut)
         db.writeMoney(payOut)
-        choice = input("\nPlay again? (y/n): ")
-    print("Come back soon!")
+        choice = input("\nPlay again? (y/n): \n")
+    print("\nCome back soon!")
     print("Bye")
-
 
 if __name__ == "__main__":
     main()
