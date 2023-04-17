@@ -32,7 +32,7 @@ def gamePlay(cardDeck):
         playerCard = cardDeck[dealCard]
         playerHand.append(playerCard)
         i += 1
-    print("\nPLAYER'S CARDS:")
+    print("\nYour hand is: ")
     for card in playerHand:
         print(card[0], "of", card[1])
         playerHandValue += int(card[2])
@@ -67,11 +67,36 @@ def gamePlay(cardDeck):
         except Exception as e:
             print("Unexpected error ", type(e), e)
             sys.exit(1)
+    print("\nDealers hand: ")
+    for card in dealerHand:
+        print(f"{card[0]} of {card[1]}")
+    print(f"\nValue of your hand: {playerHandValue}")
+    print(f"Value of dealers hand: {dealerHandValue}")
 
-
-
+#Determines who wins with various if and statements
+def determineWinner(playerHandValue, dealerHandValue):
+    playerWinnings = 0
+    if playerHandValue > 21:
+        print("You bust! You lose your bet")
+        return playerWinnings
+    elif playerHandValue == 21 and playerHandValue > dealerHandValue:
+        print("Blackjack! you win your bet")
+        playerWinnings = 1
+        return playerWinnings
+    elif dealerHandValue == 21 and dealerHandValue > playerHandValue:
+        print("Dealer Blackjack! you lose your bet")
+        return playerWinnings
+    elif playerHandValue <= 21 and dealerHandValue > 21:
+        print("Dealer busts! You win your bet")
+        playerWinnings = 1
+        return playerWinnings
+    elif playerHandValue <= 21 and playerHandValue == dealerHandValue:
+        print("A standoff! You get your bet back")
+        playerWinnings = 2
+        return playerWinnings
 
 def main():
+    #main deck
     deck = [["2", "Spades", 2], ["2", "Clubs", 2], ["2", "Diamonds", 2], ["2", "Hearts", 2],
             ["3", "Spades", 3], ["3", "Clubs", 3], ["3", "Diamonds", 3], ["3", "Hearts", 3],
             ["4", "Spades", 4], ["4", "Clubs", 4], ["4", "Diamonds", 4], ["4", "Hearts", 4],
