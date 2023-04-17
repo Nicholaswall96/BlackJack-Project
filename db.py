@@ -9,12 +9,12 @@ def writeMoney(payOut):
 
 def readMoney():
     try:
-        moneyAmount = []
+        money = []
         with open(FILENAME, "r", newline = "") as file:
             money = file.readline()
-            moneyAmount.append(money)
-            print("Money:\t" + moneyAmount[0][0])
-            return float(moneyAmount[0][0])
+            money.append(money)
+            print("Money:\t" + money[0][0])
+            return float(money[0][0])
     except FileNotFoundError:
         print("Could not find the file. try again")
     except Exception as e:
